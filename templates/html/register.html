@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        function ajaxResponse(xhr,successFunction,falseFunction) {
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    console.log(xhr.status);
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                        alert("成功");
+                        successFunction();
+                     }
+                    else {
+                        alert("失败" + xhr.status);
+                        falseFunction();
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="getHelloApiDiv" style="background: aqua;height: 100px;width: 100px"></div>
+<p>账号：</p><input type="text" id="userID">
+<p>密码：</p><input type="password" id="pwd">
+<button id="submit">注册</button>
+</body>
+<script>
+    let getApiDiv = document.querySelector('#getHelloApiDiv');
+    let xhr = new XMLHttpRequest();
+    getApiDiv.onclick = function(){
+        ajaxResponse(
+        xhr,
+        function () {
+            let helloText = JSON.parse(xhr.responseText);
+            getApiDiv.innerText = helloText.msg;
+        },function () {
+        }
+    );
+    xhr.open('get','http://127.0.0.1:8888/api/helloApi'); //接口写在这里
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=utf-8');
+    xhr.send(null);
+    };
+    let subBt = document.getElementById('submit');
+    subBt.onclick = function () {
+        let userID = document.getElementById('userID').value;
+        let pwd = document.getElementById('pwd').value;
+        let xhrRegister = new XMLHttpRequest();
+        ajaxResponse(xhrRegister,
+        function () {
+            let respones = JSON.parse(xhrRegister.responseText);
+            alert(respones.msg);
+        },function () {
+            });
+        let user = {
+            userID:userID,
+            pwd:pwd
+        };
+        xhrRegister.open('post', 'http://127.0.0.1:8888/blog/add');
+        xhrRegister.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=utf-8');
+        xhrRegister.send(JSON.stringify(user));
+};
+</script>
+</html>
